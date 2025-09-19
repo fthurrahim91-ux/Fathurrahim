@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyPal - Aplikasi Mahasiswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">📚 StudyPal</h1>
+            <p class="text-gray-600">Aplikasi Manajemen Kuliah untuk Mahasiswa</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap justify-center mb-8 bg-white rounded-lg shadow-md p-2">
+            <button onclick="showTab('roster')" id="roster-tab" class="tab-btn px-6 py-3 rounded-md font-medium transition-all duration-200 bg-primary text-white">
+                📅 Roster Kuliah
+            </button>
+            <button onclick="showTab('todo')" id="todo-tab" class="tab-btn px-6 py-3 rounded-md font-medium transition-all duration-200 text-gray-600 hover:bg-gray-100">
+                ✅ To-Do List
+            </button>
+            <button onclick="showTab('summary')" id="summary-tab" class="tab-btn px-6 py-3 rounded-md font-medium transition-all duration-200 text-gray-600 hover:bg-gray-100">
+                📋 Rangkuman Tugas
+            </button>
+        </div>
+
+        <!-- Roster Mata Kuliah Tab -->
+        <div id="roster-content" class="tab-content">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Mata Kuliah</h2>
+                <form id="course-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <select id="day-select" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Pilih Hari</option>
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                    </select>
+                    <input type="text" id="course-name" placeholder="Nama Mata Kuliah" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <input type="text" id="lecturer-name" placeholder="Nama Dosen" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <input type="time" id="course-time" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <button type="submit" class="md:col-span-4 bg-primary hover:bg-secondary text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200">
+                        Tambah Mata Kuliah
+                    </button>
+                </form>
+            </div>
+
+            <!-- Schedule Display -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <div class="bg-white rounded-lg shadow-lg p-4" data-day="Senin">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-blue-100 py-2 rounded">Senin</h3>
+                    <div id="senin-courses" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4" data-day="Selasa">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-blue-100 py-2 rounded">Selasa</h3>
+                    <div id="selasa-courses" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4" data-day="Rabu">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-blue-100 py-2 rounded">Rabu</h3>
+                    <div id="rabu-courses" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4" data-day="Kamis">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-blue-100 py-2 rounded">Kamis</h3>
+                    <div id="kamis-courses" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4" data-day="Jumat">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-blue-100 py-2 rounded">Jumat</h3>
+                    <div id="jumat-courses" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- To-Do List Tab -->
+        <div id="todo-content" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Daftar Tugas</h2>
+                <form id="todo-form" class="flex gap-2 mb-6">
+                    <input type="text" id="todo-input" placeholder="Tambah tugas baru..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <button type="submit" class="bg-primary hover:bg-secondary text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200">
+                        Tambah
+                    </button>
+                </form>
+                <div id="todo-list" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Rangkuman Tugas Tab -->
+        <div id="summary-content" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Tambah Tugas per Hari</h2>
+                <form id="assignment-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <select id="assignment-day" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">Pilih Hari</option>
+                        <option value="Senin">Senin</option>
+                        <option value="Selasa">Selasa</option>
+                        <option value="Rabu">Rabu</option>
+                        <option value="Kamis">Kamis</option>
+                        <option value="Jumat">Jumat</option>
+                    </select>
+                    <input type="text" id="assignment-title" placeholder="Judul Tugas" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <button type="submit" class="bg-primary hover:bg-secondary text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200">
+                        Tambah Tugas
+                    </button>
+                </form>
+            </div>
+
+            <!-- Assignment Summary Display -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-green-100 py-2 rounded">Senin</h3>
+                    <div id="senin-assignments" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-green-100 py-2 rounded">Selasa</h3>
+                    <div id="selasa-assignments" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-green-100 py-2 rounded">Rabu</h3>
+                    <div id="rabu-assignments" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-green-100 py-2 rounded">Kamis</h3>
+                    <div id="kamis-assignments" class="space-y-2"></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-4">
+                    <h3 class="font-bold text-lg text-gray-800 mb-3 text-center bg-green-100 py-2 rounded">Jumat</h3>
+                    <div id="jumat-assignments" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let courses = JSON.parse(localStorage.getItem('courses')) || {};
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        let assignments = JSON.parse(localStorage.getItem('assignments')) || {};
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-content').classList.remove('hidden');
+            
+            // Add active class to selected tab
+            document.getElementById(tabName + '-tab').classList.add('bg-primary', 'text-white');
+            document.getElementById(tabName + '-tab').classList.remove('text-gray-600', 'hover:bg-gray-100');
+        }
+
+        // Course management
+        document.getElementById('course-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const day = document.getElementById('day-select').value;
+            const courseName = document.getElementById('course-name').value;
+            const lecturerName = document.getElementById('lecturer-name').value;
+            const courseTime = document.getElementById('course-time').value;
+            
+            if (!day || !courseName || !lecturerName || !courseTime) {
+                alert('Mohon lengkapi semua field!');
+                return;
+            }
+            
+            if (!courses[day]) {
+                courses[day] = [];
+            }
+            
+            courses[day].push({
+                id: Date.now(),
+                name: courseName,
+                lecturer: lecturerName,
+                time: courseTime
+            });
+            
+            // Sort by time
+            courses[day].sort((a, b) => a.time.localeCompare(b.time));
+            
+            localStorage.setItem('courses', JSON.stringify(courses));
+            displayCourses();
+            
+            // Reset form
+            this.reset();
+        });
+
+        function displayCourses() {
+            const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+            
+            days.forEach(day => {
+                const container = document.getElementById(day.toLowerCase() + '-courses');
+                container.innerHTML = '';
+                
+                if (courses[day]) {
+                    courses[day].forEach(course => {
+                        const courseElement = document.createElement('div');
+                        courseElement.className = 'bg-blue-50 p-3 rounded-lg border-l-4 border-primary';
+                        courseElement.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800">${course.name}</h4>
+                                    <p class="text-sm text-gray-600">👨‍🏫 ${course.lecturer}</p>
+                                    <p class="text-sm text-gray-600">🕐 ${course.time}</p>
+                                </div>
+                                <button onclick="deleteCourse('${day}', ${course.id})" class="text-red-500 hover:text-red-700 ml-2">
+                                    🗑️
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(courseElement);
+                    });
+                }
+            });
+        }
+
+        function deleteCourse(day, courseId) {
+            courses[day] = courses[day].filter(course => course.id !== courseId);
+            if (courses[day].length === 0) {
+                delete courses[day];
+            }
+            localStorage.setItem('courses', JSON.stringify(courses));
+            displayCourses();
+        }
+
+        // Todo management
+        document.getElementById('todo-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const todoText = document.getElementById('todo-input').value.trim();
+            if (!todoText) return;
+            
+            todos.push({
+                id: Date.now(),
+                text: todoText,
+                completed: false
+            });
+            
+            localStorage.setItem('todos', JSON.stringify(todos));
+            displayTodos();
+            
+            document.getElementById('todo-input').value = '';
+        });
+
+        function displayTodos() {
+            const container = document.getElementById('todo-list');
+            container.innerHTML = '';
+            
+            todos.forEach(todo => {
+                const todoElement = document.createElement('div');
+                todoElement.className = `flex items-center gap-3 p-3 rounded-lg border ${todo.completed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`;
+                todoElement.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} 
+                           onchange="toggleTodo(${todo.id})" 
+                           class="w-5 h-5 text-primary rounded focus:ring-primary">
+                    <span class="flex-1 ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}">${todo.text}</span>
+                    <button onclick="deleteTodo(${todo.id})" class="text-red-500 hover:text-red-700">
+                        🗑️
+                    </button>
+                `;
+                container.appendChild(todoElement);
+            });
+        }
+
+        function toggleTodo(todoId) {
+            const todo = todos.find(t => t.id === todoId);
+            if (todo) {
+                todo.completed = !todo.completed;
+                localStorage.setItem('todos', JSON.stringify(todos));
+                displayTodos();
+            }
+        }
+
+        function deleteTodo(todoId) {
+            todos = todos.filter(t => t.id !== todoId);
+            localStorage.setItem('todos', JSON.stringify(todos));
+            displayTodos();
+        }
+
+        // Assignment management
+        document.getElementById('assignment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const day = document.getElementById('assignment-day').value;
+            const title = document.getElementById('assignment-title').value.trim();
+            
+            if (!day || !title) {
+                alert('Mohon lengkapi semua field!');
+                return;
+            }
+            
+            if (!assignments[day]) {
+                assignments[day] = [];
+            }
+            
+            assignments[day].push({
+                id: Date.now(),
+                title: title
+            });
+            
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+            displayAssignments();
+            
+            this.reset();
+        });
+
+        function displayAssignments() {
+            const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+            
+            days.forEach(day => {
+                const container = document.getElementById(day.toLowerCase() + '-assignments');
+                container.innerHTML = '';
+                
+                if (assignments[day]) {
+                    assignments[day].forEach(assignment => {
+                        const assignmentElement = document.createElement('div');
+                        assignmentElement.className = 'bg-green-50 p-3 rounded-lg border-l-4 border-green-500';
+                        assignmentElement.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-800">📝 ${assignment.title}</span>
+                                <button onclick="deleteAssignment('${day}', ${assignment.id})" class="text-red-500 hover:text-red-700">
+                                    🗑️
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(assignmentElement);
+                    });
+                }
+            });
+        }
+
+        function deleteAssignment(day, assignmentId) {
+            assignments[day] = assignments[day].filter(assignment => assignment.id !== assignmentId);
+            if (assignments[day].length === 0) {
+                delete assignments[day];
+            }
+            localStorage.setItem('assignments', JSON.stringify(assignments));
+            displayAssignments();
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            displayCourses();
+            displayTodos();
+            displayAssignments();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9815d64217a4fd13',t:'MTc1ODI1MDg3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
